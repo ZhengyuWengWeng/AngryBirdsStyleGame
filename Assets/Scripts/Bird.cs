@@ -5,10 +5,16 @@ using Assets.Scripts;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Bird : MonoBehaviour
 {
+    private bool destroyScheduled;
 
     // Use this for initialization
-    void Start()
+    protected virtual void Start()
     {
+        // A split bird can be put into the thrown state immediately after it is
+        // instantiated. Do not reset it if Start runs after that happens.
+        if (State == BirdState.Thrown)
+            return;
+
         //trailrenderer is not visible until we throw the bird
         GetComponent<TrailRenderer>().enabled = false;
         GetComponent<TrailRenderer>().sortingLayerName = "Foreground";
@@ -21,22 +27,30 @@ public class Bird : MonoBehaviour
 
 
 
-    void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         //if we've thrown the bird
         //and its speed is very small
-        if (State == BirdState.Thrown &&
+        if (!destroyScheduled &&
+            State == BirdState.Thrown &&
             GetComponent<Rigidbody2D>().velocity.sqrMagnitude <= Constants.MinVelocity)
         {
             //destroy the bird after 2 seconds
+            destroyScheduled = true;
             StartCoroutine(DestroyAfter(2));
         }
     }
 
-    public void OnThrow()
+    public virtual void OnThrow()
+    {
+        BeginFlight(true);
+    }
+
+    protected void BeginFlight(bool playSound)
     {
         //play the sound
-        GetComponent<AudioSource>().Play();
+        if (playSound)
+            GetComponent<AudioSource>().Play();
         //show the trail renderer
         GetComponent<TrailRenderer>().enabled = true;
         //allow for gravity forces
@@ -55,6 +69,6 @@ public class Bird : MonoBehaviour
     public BirdState State
     {
         get;
-        private set;
+        protected set;
     }
 }
