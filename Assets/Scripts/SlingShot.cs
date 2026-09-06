@@ -137,7 +137,7 @@ public class SlingShot : MonoBehaviour
     {
         //get velocity
         Vector3 velocity = SlingshotMiddleVector - BirdToThrow.transform.position;
-        BirdToThrow.GetComponent<Bird>().OnThrow(); //make the bird aware of it
+        BirdToThrow.GetComponent<BlueBird>().OnThrow(); //make the bird aware of it
         //old and alternative way
         //BirdToThrow.GetComponent<Rigidbody2D>().AddForce
         //    (new Vector2(v2.x, v2.y) * ThrowSpeed * distance * 300 * Time.deltaTime);
